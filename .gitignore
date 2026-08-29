@@ -1,0 +1,32 @@
+# NW.js desktop runtime — not needed for web hosting
+node.dll
+nw.dll
+nw.exe
+nw_elf.dll
+notification_helper.exe
+*.pak
+v8_context_snapshot.bin
+vk_swiftshader.dll
+vk_swiftshader_icd.json
+vulkan-1.dll
+d3dcompiler_47.dll
+dxcompiler.dll
+dxil.dll
+ffmpeg.dll
+icudtl.dat
+libEGL.dll
+libGLESv2.dll
+locales/
+swiftshader/
+
+# IDE / build tool config
+.idea/
+nbproject/
+
+# NW.js app manifest (only needed for building the desktop app)
+package.json
+~package.json
+
+# OS junk
+Thumbs.db
+.DS_Store

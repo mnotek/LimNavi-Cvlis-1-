@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LimNavi Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LimNavi">
+    `
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+    :root {
+    --bg: #0b0f1a;
+    --surface: #161b2c;  
+    --accent: #f59e0b;   
+    --danger: #ff4757;   
+    --success: #10b981;
+    --text-main: #f8fafc; 
+    --text-dim: #94a3b8;   
+    --glass-border: rgba(255, 255, 255, 0.05);
+
+    --map-bg: #ddd4bd;
+    --map-border: #8c7a5c;
+    --building: #1f4d3a;
+    --building-dark: #163a2c;
+    --building-border: #c9a45c;
+    --bridge: #b89b6b;
+    --tag-bg: #f4efe2;
+}
+
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            height:100vh; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            overflow:hidden; 
+            letter-spacing: -0.01em;
+        }
+
+        button { cursor:pointer; border:none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-family: inherit; }
+        button:active { transform: scale(0.96); }
+
+        input, select, textarea { 
+            padding:0.8rem 1.2rem; border-radius:16px; border:1px solid #2d3748; 
+            font-size:0.95rem; outline:none; background: var(--surface); 
+            color: white; width:100%; margin-bottom: 12px;
+        }
+
+        #loginLay { 
+            display:flex; flex-direction:column; justify-content:center; align-items:center; 
+            height:100vh; background: radial-gradient(circle at top right, #1e293b, #0b0f1a); 
+            text-align:center; padding: 2rem;
+            position: fixed; width: 100%; z-index: 5000; 
+        }
+        
+        #mainLay { display:none; flex-direction:column; height:100vh; position: relative; }
+
+        #topBar {
+            display: flex; align-items: center; gap: 10px; padding: 10px 15px;
+            background: rgba(11, 15, 26, 0.9); backdrop-filter: blur(10px);
+            z-index: 1000; border-bottom: 1px solid var(--glass-border);
+        }
+        #topBar input { margin-bottom: 0; flex: 1; }
+        #menuBtn, #searchBtn { background: var(--surface); color: white; padding: 10px; border-radius: 12px; font-size: 1.2rem; }
+
+        #statusDot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #4b5563; transition: 0.3s;
+        }
+        #statusDot.online { background: var(--success); box-shadow: 0 0 10px var(--success); }
+
+#mapArea { 
+    flex:1; 
+    position:relative; 
+    overflow:hidden; 
+    background: linear-gradient(135deg, #0b0f1a 0%, #1e3a8a 50%, #08569b 100%);
+    touch-action: none; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+        
+#map {
+    width:1500px; 
+    height:1000px; 
+    flex-shrink: 0;        /* ADD THIS */
+    min-width: 1500px;     /* ADD THIS */
+    min-height: 1000px;    /* ADD THIS */
+    position:relative; 
+    background: var(--map-bg);
+    background-image: 
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, transparent 1px, transparent 40px);
+    border: 14px solid var(--map-border);
+    outline: 4px solid #4a4034;
+    border-radius: 4px;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+.mapBtn {
+    position: absolute; 
+    color: #fff; 
+    font-size: 1rem; 
+    font-weight: 700; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    text-align: center; 
+    border-radius: 10px; 
+    border: 3px solid var(--building-border); 
+    background: linear-gradient(160deg, var(--building), var(--building-dark));
+    transition: all 0.25s ease; 
+    padding: 6px 8px; 
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.05);
+    z-index: 5;
+    line-height: 1.2;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+
+.mapBtn:hover {
+    filter: brightness(1.15);
+    transform: scale(1.04);
+    border-color: var(--accent);
+    cursor: pointer;
+}
+
+        .secondaryBtn {
+            margin-top: 12px;
+            background: transparent;
+            border: 2px solid var(--accent);
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: var(--accent);
+            width: 220px;
+        }
+        .secondaryBtn:hover {
+            background: var(--accent);
+            color: black;
+        }
+
+.highlight-building {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 3px;
+    box-shadow: 0 0 20px var(--accent) !important;
+    transform: scale(1.08);
+    z-index: 100;
+}
+
+
+        #drawer { 
+            position:fixed; top:0; left:-300px; width:300px; height:100vh; 
+            background: var(--surface); padding:2rem 1.5rem; transition: 0.4s; 
+            z-index:2000; border-right: 1px solid var(--glass-border); 
+        }
+        #drawer.open { left:0; } 
+        
+        .drawer-item {
+            width: 100%; text-align: left; padding: 15px; background: transparent;
+            color: var(--text-main); font-size: 1rem; border-radius: 12px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .modal { 
+            position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:rgba(2, 6, 23, 0.9); display:none; justify-content:center; 
+            align-items:center; z-index:9999; padding:20px;
+        }
+        .modal-box { width:100%; max-width:420px; padding:2.5rem; border-radius:28px; max-height: 85vh; overflow-y: auto; }
+
+        .teacher-card { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--accent); cursor: pointer;}
+        .floorBtn { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 12px; background: #2d3748; color: white; font-weight: 600; }
+
+        #reportOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 4000; display: none; 
+            flex-direction: column; padding: 25px; overflow-y: auto;
+        }
+
+        .qr-option {
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+        .qr-option img {
+            width: 150px;
+            height: 150px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background: white;
+            padding: 5px;
+        }
+        .mapBtn.has-img {
+    background-color: transparent;
+    background-image: var(--bg-img); /* or set inline as I showed */
+    background-size: cover;
+    background-position: center;
+}
+.mapBtn.has-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.15));
+    border-radius: inherit;
+    z-index: 0;
+}
+.mapBtnLabel {
+    position: relative;
+    z-index: 1;
+}
+#searchBtn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+#searchBtn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.bridge {
+    position: absolute;
+    background: repeating-linear-gradient(90deg, var(--bridge), var(--bridge) 10px, #a3875a 10px, #a3875a 20px);
+    border: 2px solid #7a6440;
+    border-radius: 4px;
+    z-index: 2;
+}
+.decorTag {
+    position: absolute;
+    background: var(--tag-bg);
+    color: #2d3748;
+    border: 1px solid #9c8a68;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    z-index: 6;
+    white-space: nowrap;
+}
+
+.flagBox {
+    position: absolute;
+    background: rgba(255,255,255,0.9);
+    border: 3px solid var(--building-border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 0.8rem;
+    z-index: 4;
+    padding: 6px;
+}
+
+.landmarkIcon {
+    position: absolute;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--building);
+    border: 3px solid var(--building-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    z-index: 4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+    </style>
+</head>
+<body>
+
+    <div id="loginLay">
+        <img src="img/logo.png" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #f59e0b; margin-bottom: 20px;" onerror="this.src='https://via.placeholder.com/80';">
+        <div class="brand-logo" style="font-size: 3rem; font-weight: 900; color: white;">LimNavi</div>
+        <p style="color: var(--text-dim);">CVLIS</p>
+        <button class="enterBtn" onclick="enterApp()" style="margin-top:20px; background:var(--accent); padding:15px 40px; border-radius:50px; font-weight:bold; color:black; width: 220px;">OPEN MAP</button>
+        <button class="secondaryBtn" onclick="showAccessOptions()">ACCESS APP</button>
+    </div>
+
+    <div id="reportOverlay">
+        <div class="report-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2>System Logs</h2>
+            <button onclick="closeReports()" style="background:var(--surface); padding:10px 20px; color:white; border-radius:10px;">Back</button>
+        </div>
+        <div id="reportGrid" class="report-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;"></div>
+    </div>
+
+    <div id="mainLay">
+        <div id="topBar">
+            <button id="menuBtn" onclick="toggleDrawer()"><i class="ri-menu-5-line"></i></button>
+            <div id="statusDot" title="Network Status"></div>
+            <input id="searchInput" type="text" placeholder="Find faculty..." onkeypress="if(event.key==='Enter') onSearch()">
+            <button id="searchBtn" onclick="onSearch()"><img src="img/logo.png"></button>
+        </div>
+        <div id="mapArea">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <div id="drawer">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <h2 style="color: white;">Explore</h2>
+            <button onclick="toggleDrawer()"><i class="ri-close-line"></i></button>
+        </div>
+        <button class="drawer-item" onclick="window.location.href='pano.html?target=1-main'" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+            <i class="ri-panorama-line"></i> Virtual 360° Tour
+        </button>
+        <button class="drawer-item" onclick="toggleDrawer(); clearHighlights(); resetZoom();"><i class="ri-compass-3-line"></i> Reset View</button>
+        <button class="drawer-item" onclick="showReportForm()"><i class="ri-error-warning-line"></i> Report Issue</button>
+        <button class="drawer-item" onclick="viewReports()"><i class="ri-stack-line"></i> Maintenance</button>
+        <hr style="opacity: 0.1; margin: 20px 0;">
+        <button class="drawer-item" onclick="showEmergency()"><i class="ri-phone-line"></i> Emergency Help</button>
+        <button class="drawer-item" onclick="location.reload()" style="color: var(--danger);"><i class="ri-shut-down-line"></i> Exit System</button>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-box" style="background: var(--surface); border: 1px solid var(--glass-border);">
+            <h3 id="modalTitle" style="color: var(--accent); margin-bottom: 15px;"></h3>
+            <div id="modalBody"></div>
+            <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; background:var(--accent); color:black; font-weight:bold; border-radius:12px;">CLOSE</button>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+
+<script>
+let maintenanceReports = JSON.parse(localStorage.getItem('limnavi_reports')) || []; 
+let currentScale = 1;
+let posX = 0, posY = 0;
+let lastPosX = 0, lastPosY = 0;
+let lastScale = 1;
+
+// RETAINED BUILDINGS
+const buildings = [
+    {id:"gate", label:"Gate", x:0.00, y:0.02, w:0.055, h:0.10, maxFloor:0, panoTarget:"1-main"},
+    {id:"grade7_top", label:"🎓 Grade 7", x:0.135, y:0.03, w:0.275, h:0.105, maxFloor:2},
+    {id:"grade8", label:"🎓 Grade 8", x:0.435, y:0.03, w:0.20, h:0.105, maxFloor:2},
+    {id:"grade-7", label:"🎓 Grade 7", x:0.655, y:0.03, w:0.24, h:0.105, maxFloor:2},
+    {id:"cr", label:"🚻 CR", x:0.865, y:0.145, w:0.09, h:0.06, maxFloor:0},
+
+    {id:"canteen", label:"🍽️ Canteen", x:0.048, y:0.178, w:0.087, h:0.267, maxFloor:1, panoTarget:"21-canteen-entrance-"},
+    {id:"olds", label:"🏛️ Old Stage", x:0.048, y:0.462, w:0.087, h:0.116, maxFloor:1, panoTarget:"20-front-of-old-stage"},
+    {id:"ict", label:"💻 ICT/SMAW", x:0.048, y:0.578, w:0.087, h:0.212, maxFloor:4, panoTarget:"18-ict"},
+    {id:"gateB", label:"Gate", x:0.00, y:0.83, w:0.055, h:0.10, maxFloor:0},
+
+    {id:"court", label:"🏀 Court", x:0.192, y:0.178, w:0.17, h:0.487, maxFloor:0},
+    {id:"g7_small", label:"🎓 Grade 7", x:0.377, y:0.178, w:0.075, h:0.487, maxFloor:2},
+
+    {id:"grade8b", label:"🎓 Grade 8", x:0.487, y:0.19, w:0.088, h:0.165, maxFloor:2},
+    {id:"grade10", label:"🎓 Grade 10", x:0.487, y:0.395, w:0.088, h:0.315, maxFloor:4},
+
+    {id:"grade9", label:"🎓 Grade 9-11", x:0.705, y:0.21, w:0.095, h:0.50, maxFloor:4, panoTarget:"15-intramuros"},
+
+    {id:"sci", label:"🧪 Sci Lab", x:0.865, y:0.22, w:0.09, h:0.17, maxFloor:1, panoTarget:"10-science-lab"},
+    {id:"stem", label:"🔬 STEM Building", x:0.865, y:0.415, w:0.09, h:0.305, maxFloor:1, panoTarget:"9-stem"},
+
+    {id:"office", label:"🏢 Office", x:0.598, y:0.71, w:0.192, h:0.08, maxFloor:1, panoTarget:"2-off-1"},
+    {id:"guidance", label:"🧭 Guidance", x:0.865, y:0.715, w:0.09, h:0.215, maxFloor:1, panoTarget:"8-guidance"},
+
+    {id:"eim", label:"🎓 EIM/Cookery", x:0.135, y:0.825, w:0.227, h:0.105, maxFloor:2, panoTarget:"1-eim"},
+    {id:"acad", label:"📘 Acads Building", x:0.392, y:0.825, w:0.323, h:0.105, maxFloor:4, panoTarget:"5-acad-building"},
+    {id:"gateC", label:"Gate", x:0.825, y:0.845, w:0.05, h:0.085, maxFloor:0}
+];
+
+const bridges = [
+    {x:0.505, y:0.355, w:0.045, h:0.04},   // grade8b <-> grade10
+    {x:0.575, y:0.245, w:0.13, h:0.035},   // column <-> grade9 (upper)
+    {x:0.575, y:0.565, w:0.13, h:0.035},   // column <-> grade9 (lower)
+    {x:0.79,  y:0.735, w:0.075, h:0.035}   // office <-> guidance
+];
+
+const decorItems = [
+    {label:"Wash Area", x:0.235, y:0.145, w:0.10, h:0.035},
+    {label:"Wash Area", x:0.50, y:0.145, w:0.10, h:0.035},
+    {label:"Wash Area", x:0.048, y:0.80, w:0.087, h:0.035},
+    {label:"Wash Area", x:0.865, y:0.40, w:0.09, h:0.035},
+    {label:"Wash Area", x:0.135, y:0.935, w:0.10, h:0.035},
+    {label:"Wash Area", x:0.50, y:0.935, w:0.10, h:0.035},
+    {label:"Wash Area", x:0.865, y:0.935, w:0.09, h:0.035},
+    {label:"🚲 E-Bike Parking", x:0.145, y:0.25, w:0.09, h:0.05},
+    {label:"🚲 E-Bike Parking", x:0.145, y:0.40, w:0.09, h:0.05}
+];
+
+// RETAINED TEACHERS
+const allTeachers = [
+    //
+    {name:"Charles David Birog", building:"ict", floor:"1st Floor", details:"SMAW Adviser - Room 1"},
+    //
+    {name:"Glenn L. Austria", building:"ict", floor:"2nd Floor", details:"ICT Grade 11 Torre Adviser - Room 2"},
+    //
+    {name:"Jerome Saturno", building:"ict", floor:"2nd Floor", details:"ICT Grade 12 Aquinas Adviser - Room 3"},
+    //
+    {name:"Ma. Theresa Matet Calopez", building:"ict", floor:"3rd Floor", details:"ICT Grade 11 Didal Adviser - Room 4"},
+    //
+    {name:"Jay Rick T. Escobar", building:"ict", floor:"3rd Floor", details:"ICT Grade 12 Montessori Adviser - Room 5"},
+    //
+    {name:"Lourize Alcoran", building:"ict", floor:"4th Floor", details:"ICT Grade 11 Yldefonso Adviser - Room 6"},
+    //
+    {name:"Ronnie Pastrana", building:"ict", floor:"4th Floor", details:"ICT Grade 12 Socrates Adviser - Room 7"},
+    //
+    {name:"Anna Smith", building:"grade10", floor:"1st Floor", details:"Math Teacher"},
+    //
+    {name:"Robert Brown", building:"grade10", floor:"1st Floor", details:"English Adviser"},
+    //
+    {name:"Chris Mendez", building:"grade10", floor:"2nd Floor", details:"MAPEH Teacher"},
+    //
+    {name:"Lee-Ann Diaz Layola", building:"grade10", floor:"3rd Floor", details:"Math Teacher"},
+    //
+    {name:"Jovelyn Suelto", building:"grade10", floor:"4th Floor", details:"Science Adviser"},
+    //
+    {name:"Office Personnel", building:"office", floor:"1st Floor", details:"Admin Staff"},
+    //
+    {name:"Counselor Name", building:"guidance", floor:"1st Floor", details:"Student Support"},
+    //
+    {name:"STEM Teacher", building:"stem", floor:"1st Floor", details:"Specialized Subject"},
+    //
+    {name:"Science Teacher", building:"sci", floor:"1st Floor", details:"Lab Head"},
+    //
+    {name:"G7 Teacher F1", building:"grade7", floor:"1st Floor", details:"Subject Name"},
+    //
+    {name:"G7 Teacher F2", building:"grade7", floor:"2nd Floor", details:"Subject Name"},
+    //
+    {name:"G7 Teacher F1", building:"g7_small", floor:"1st Floor", details:"Subject Name"},
+    //
+    {name:"G7 Teacher F2", building:"g7_small", floor:"2nd Floor", details:"Subject Name"},
+    //
+    {name:"G8 Teacher F1", building:"grade8", floor:"1st Floor", details:"Subject Name"},
+    //
+    {name:"G8 Teacher F2", building:"grade8", floor:"2nd Floor", details:"Subject Name"},
+    //
+    {name:"G9 Teacher F1", building:"grade9", floor:"1st Floor", details:"Subject Name"},
+    //
+    {name:"G9 Teacher F2", building:"grade9", floor:"2nd Floor", details:"Subject Name"},
+    //
+    {name:"G9 Teacher F3", building:"grade9", floor:"3rd Floor", details:"Subject Name"},
+    //
+    {name:"G9 Teacher F4", building:"grade9", floor:"4th Floor", details:"Subject Name"},
+    //
+    {name:"EIM Teacher F1", building:"eim", floor:"1st Floor", details:"Shop Lab"},
+    //
+    {name:"EIM Teacher F2", building:"eim", floor:"2nd Floor", details:"Theory Class"},
+    //
+    {name:"Acad Teacher F1", building:"acad", floor:"1st Floor", details:"Dept Head"},
+    //
+    {name:"Acad Teacher F2", building:"acad", floor:"2nd Floor", details:"Room 201"},
+    //
+    {name:"Acad Teacher F3", building:"acad", floor:"3rd Floor", details:"Room 301"},
+    //
+    {name:"Acad Teacher F4", building:"acad", floor:"4th Floor", details:"Room 401"}
+];
+
+// SYSTEM FUNCTIONS
+function updateStatusUI() {
+    const dot = document.getElementById('statusDot');
+    if (dot) {
+        if (navigator.onLine) dot.classList.add('online');
+        else dot.classList.remove('online');
+    }
+}
+
+function loadEmailJS() {
+    if (navigator.onLine && !window.emailjs) {
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+        script.onload = function() { emailjs.init("-Ofjxy1x11TDIa2H0"); updateStatusUI(); };
+        document.head.appendChild(script);
+    }
+}
+
+function enterApp() {
+    document.getElementById('loginLay').style.display = 'none';
+    document.getElementById('mainLay').style.display = 'flex';
+    generateMap(); 
+    loadEmailJS();
+    initHammer();
+    setTimeout(resetZoom, 200);
+}
+
+// NEW FUNCTION: SHOWS QR WITHOUT OPENING APP
+function showAccessOptions() {
+    showModal("Access Options", `
+        <div class="qr-option">
+            <p><b>App Installation</b></p>
+            <img src="img/qrcode.png" onerror="this.src='https://via.placeholder.com/150?text=QR+Code+App'">
+            <p><small>Scan to download/install the app.</small></p>
+        </div>
+        <div class="qr-option">
+            <p><b>Online App Viewer</b></p>
+            <img src="img/qr-code.png" onerror="this.src='https://via.placeholder.com/150?text=Online+QR'">
+            <p><small>Scan to view the app online.</small></p>
+        </div>
+    `);
+}
+
+//MAP IMAGES
+function generateMap() {
+    const map = document.getElementById('map');
+    if(!map) return;
+    map.innerHTML = '';
+
+    // 1. Bridges (drawn first, sit behind buildings)
+    bridges.forEach(br => {
+        const el = document.createElement('div');
+        el.className = 'bridge';
+        el.style.left = (br.x * 100) + "%";
+        el.style.top = (br.y * 100) + "%";
+        el.style.width = (br.w * 100) + "%";
+        el.style.height = (br.h * 100) + "%";
+        map.appendChild(el);
+    });
+
+    // 2. Decorative tags (wash areas, e-bike parking)
+    decorItems.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'decorTag';
+        el.innerHTML = d.label;
+        el.style.left = (d.x * 100) + "%";
+        el.style.top = (d.y * 100) + "%";
+        el.style.width = (d.w * 100) + "%";
+        el.style.height = (d.h * 100) + "%";
+        map.appendChild(el);
+    });
+
+    // 3. Jose Rizal flag marker
+    const flag = document.createElement('div');
+    flag.className = 'flagBox';
+    flag.style.left = "19.2%"; flag.style.top = "68.5%";
+    flag.style.width = "17%"; flag.style.height = "12.5%";
+    flag.innerHTML = "🇵🇭<br>Jose Rizal Flag<br><span style='color:#c0392b;'>I ❤️ CVLIS</span>";
+    map.appendChild(flag);
+
+    // 4. Intramuros landmark icon
+    const landmark = document.createElement('div');
+    landmark.className = 'landmarkIcon';
+    landmark.style.left = "61.5%"; landmark.style.top = "46.2%";
+    landmark.innerHTML = "🏆";
+    landmark.title = "Intramuros";
+    map.appendChild(landmark);
+
+    // 5. Buildings (clickable)
+    buildings.forEach(b => {
+        const btn = document.createElement('div');
+        btn.className = 'mapBtn';
+        btn.id = "map-bldg-" + b.id;
+
+        if (b.img) {
+            btn.classList.add('has-img');
+            btn.style.backgroundImage = `url('${b.img}')`;
+            btn.innerHTML = `<span class="mapBtnLabel">${b.label}</span>`;
+        } else {
+            btn.innerHTML = b.label;
+        }
+
+        btn.style.left = (b.x * 100) + "%"; 
+        btn.style.top = (b.y * 100) + "%";
+        btn.style.width = (b.w * 100) + "%"; 
+        btn.style.height = (b.h * 100) + "%";
+        btn.onclick = (e) => { e.stopPropagation(); openBuilding(b.label, b.id, b.maxFloor || 0, b.panoTarget); };
+        map.appendChild(btn);
+    });
+}
+
+bridges.forEach(br => {
+        const el = document.createElement('div');
+        el.className = 'bridge';
+        el.style.left = (br.x * 100) + "%";
+        el.style.top = (br.y * 100) + "%";
+        el.style.width = (br.w * 100) + "%";
+        el.style.height = (br.h * 100) + "%";
+        map.appendChild(el);
+    });
+
+
+function initHammer() {
+    const mapArea = document.getElementById('mapArea');
+    if (!mapArea) return;
+    
+    mapArea.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = currentScale * delta;
+        if (newScale > 0.1 && newScale < 4) {
+            currentScale = newScale;
+            updateTransform();
+        }
+    }, { passive: false });
+
+    if (typeof Hammer === 'undefined') return;
+
+    const mc = new Hammer.Manager(mapArea);
+    mc.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+    mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith(mc.get('pan'));
+
+    mc.on("panstart pinchstart", (e) => { 
+        lastPosX = posX; 
+        lastPosY = posY; 
+        lastScale = currentScale; 
+    });
+
+    mc.on("panmove", (e) => { 
+        posX = lastPosX + e.deltaX; 
+        posY = lastPosY + e.deltaY; 
+        updateTransform(); 
+    });
+
+    mc.on("pinchmove", (e) => {
+        currentScale = Math.min(Math.max(lastScale * e.scale, 0.1), 4);
+        posX = lastPosX + e.deltaX;
+        posY = lastPosY + e.deltaY;
+        updateTransform();
+    });
+}
+
+function updateTransform() {
+    const mapEl = document.getElementById('map');
+    if(mapEl) mapEl.style.transform = `translate3d(${posX}px, ${posY}px, 0) scale(${currentScale})`;
+}
+
+function resetZoom() {
+    const area = document.getElementById('mapArea');
+    if(!area) return;
+    const isMobile = window.innerWidth < 600; 
+    const scaleX = area.clientWidth / 1500;
+    const scaleY = area.clientHeight / 1000;
+    
+    if (isMobile) {
+        currentScale = Math.max(scaleX, scaleY) * 2.5; 
+        posX = 150; 
+        posY = -50; 
+    } else {
+        currentScale = Math.min(scaleX, scaleY) * 0.95;
+        posX = -150; 
+        posY = 15;
+    }
+    updateTransform();
+}
+
+function openBuilding(label, id, max, target) {
+    let h = ``;
+    if(id === "court") {
+        h += `<button class="floorBtn" onclick="showTeachers('ict','1st Floor')">Near Bathroom (ICT)</button>`;
+        h += `<button class="floorBtn" onclick="showTeachers('grade7','1st Floor')">Near CR (G7)</button>`;
+    } else if (max > 0) {
+        for (let i=1; i<=max; i++) {
+            let n = i + (i===1?'st':i===2?'nd':i===3?'rd':'th') + " Floor";
+            h += `<button class="floorBtn" onclick="showTeachers('${id}','${n}')">${n}</button>`;
+        }
+    }
+    if(id === "eim") h += `<hr style="opacity:0.2; margin:10px 0;"><button class="floorBtn" style="background:var(--danger); color:white;" onclick="showClinicInfo()">SCHOOL CLINIC</button>`;
+    if(target) h += `<hr style="opacity:0.2; margin:10px 0;"><button class="floorBtn" style="background:var(--success); color:white;" onclick="window.location.href='pano.html?target=${target}&session=active'"><i class="ri-panorama-line"></i> VIEW 360° PANO</button>`;
+    showModal(label, h || "Ground Floor Only");
+}
+
+function onSearch() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!q) return;
+    const b = buildings.find(x => x.label.toLowerCase().includes(q));
+    if (b) { highlightOnMap(b.id); openBuilding(b.label, b.id, b.maxFloor || 0, b.panoTarget); return; }
+    const t = allTeachers.filter(x => x.name.toLowerCase().includes(q));
+    if (t.length > 0) {
+        showModal("Results", t.map(x => `<div class="teacher-card" onclick="highlightOnMap('${x.building}')"><b>${x.name}</b><br><small>${x.details} - ${x.floor}</small></div>`).join(""));
+    } else alert("Not found.");
+}
+
+function highlightOnMap(bId) {
+    clearHighlights();
+    const btn = document.getElementById("map-bldg-" + bId);
+    if(btn) {
+        btn.classList.add('highlight-building');
+
+        currentScale = 1.0; // zoom level when focusing a building
+
+        const mapCenterX = 750;  // half of #map's 1500px width
+        const mapCenterY = 500;  // half of #map's 1000px height
+        const btnCenterX = btn.offsetLeft + btn.offsetWidth / 2;
+        const btnCenterY = btn.offsetTop + btn.offsetHeight / 2;
+
+        posX = -(btnCenterX - mapCenterX) * currentScale;
+        posY = -(btnCenterY - mapCenterY) * currentScale;
+
+        updateTransform();
+        setTimeout(closeModal, 500);
+    }
+}
+
+function clearHighlights() { document.querySelectorAll('.mapBtn').forEach(b => b.classList.remove('highlight-building')); }
+
+function showReportForm() {
+    if(!navigator.onLine) {
+        alert("Note: No internet. Report will be saved locally on this device.");
+    }
+    let html = `<label>Area</label><select id="reportLoc">${buildings.map(b => `<option>${b.label}</option>`).join('')}</select>
+        <textarea id="reportDesc" rows="3" placeholder="Description..."></textarea>
+        <input type="file" id="reportImgInput" onchange="previewImage(event)"><img id="photoPreview" style="width:100%; border-radius:10px; display:none; margin-top:10px;">
+        <button id="submitBtn" class="floorBtn" style="background:var(--accent); color:black;" onclick="submitReport('Maintenance')">SUBMIT</button>`;
+    showModal("Report", html);
+}
+
+function previewImage(e) {
+    const r = new FileReader();
+    r.onload = () => { const p = document.getElementById('photoPreview'); p.src = r.result; p.style.display = 'block'; };
+    if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
+}
+
+function submitReport(type) {
+    const desc = document.getElementById('reportDesc').value;
+    const loc = document.getElementById('reportLoc').value;
+    const btn = document.getElementById('submitBtn');
+    const time = new Date().toLocaleString();
+    if(!desc) return alert("Add details.");
+    
+    if(!navigator.onLine || !window.emailjs) { 
+        saveAndClose(type, loc, desc, time); 
+        return; 
+    }
+    
+    btn.disabled = true; btn.innerHTML = "SENDING...";
+    emailjs.send("limnavi1", "template_dftp7y9", { type, location: loc, description: desc, time })
+        .then(() => { alert("Sent!"); saveAndClose(type, loc, desc, time); })
+        .catch(() => { saveAndClose(type, loc, desc, time); });
+}
+
+function saveAndClose(type, loc, desc, time) {
+    const p = document.getElementById('photoPreview');
+    maintenanceReports.push({ id: Date.now(), type, loc, desc, img: (p && p.style.display!=='none')?p.src:"", time });
+    localStorage.setItem('limnavi_reports', JSON.stringify(maintenanceReports));
+    closeModal();
+    alert("Saved to Maintenance Logs.");
+}
+
+function viewReports() {
+    toggleDrawer(); 
+    document.getElementById('reportOverlay').style.display = 'flex';
+    const grid = document.getElementById('reportGrid');
+    if (maintenanceReports.length === 0) {
+        grid.innerHTML = "<p style='padding:20px; color:var(--text-dim);'>No logs found.</p>";
+        return;
+    }
+    grid.innerHTML = maintenanceReports.map(r => `
+        <div class="report-wide-card" style="background:#1e293b; padding:15px; border-radius:15px; border-top: 4px solid var(--accent); margin-bottom:10px;">
+            <small>${r.type} - ${r.time}</small><br><b>${r.loc}</b><p>${r.desc}</p>
+            ${r.img ? `<img src="${r.img}" style="width:100%; border-radius:10px; margin:10px 0;">` : ''}
+            <button onclick="resolveReport(${r.id})" style="background:#10b981; color:white; width:100%; padding:10px; border-radius:10px; margin-top:10px;">Resolve</button>
+        </div>`).join("");
+}
+
+function resolveReport(id) {
+    maintenanceReports = maintenanceReports.filter(r => r.id !== id);
+    localStorage.setItem('limnavi_reports', JSON.stringify(maintenanceReports));
+    viewReports(); 
+}
+
+function showModal(t, b) { 
+    document.getElementById('modalTitle').innerText = t; 
+    document.getElementById('modalBody').innerHTML = b; 
+    document.getElementById('modal').style.display = 'flex'; 
+}
+
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
+function closeReports() { document.getElementById('reportOverlay').style.display = 'none'; }
+
+function showTeachers(id, n) {
+    const list = allTeachers.filter(t => t.building === id && t.floor === n);
+    showModal(n, list.length ? list.map(t => `<div class="teacher-card"><b>${t.name}</b><br><small>${t.details}</small></div>`).join("") : "No data.");
+}
+
+function showClinicInfo() {
+    showModal("School Clinic", `
+        <div style="text-align:center; padding:10px;">
+            <i class="ri-hospital-line" style="font-size:3rem; color:var(--danger);"></i>
+            <p><b>Nurse On Duty</b><br>8:00 AM - 5:00 PM</p>
+            <a href="tel:09123456789" class="floorBtn" style="display:block; background:#2d3748; color:white; text-decoration:none;">
+                <i class="ri-phone-fill"></i> Call Clinic
+            </a>
+            <p style="margin-top:8px; color:var(--text-dim); font-size:0.85rem;">or dial: 0912-345-6789</p>
+        </div>
+    `);
+}
+
+function showEmergency() { 
+    showModal("Emergency", `
+        <div style="text-align:center; padding:10px;">
+            <i class="ri-phone-line" style="font-size:3rem; color:var(--danger);"></i>
+            <p style="margin:15px 0;"><b>Clinic Emergency Line</b></p>
+            <a href="tel:09123456789" class="floorBtn" style="display:block; background:var(--danger); color:white; text-decoration:none;">
+                <i class="ri-phone-fill"></i> CALL NOW
+            </a>
+            <p style="margin-top:8px; color:var(--text-dim); font-size:0.85rem;">or dial: 0912-345-6789</p>
+        </div>
+    `); 
+}
+window.addEventListener('resize', resetZoom);
+window.addEventListener('online', loadEmailJS);
+window.addEventListener('offline', updateStatusUI);
+
+window.addEventListener('load', function() {
+    updateStatusUI();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('session') === 'active') {
+        enterApp();
+        window.history.replaceState({}, document.title, "index.html");
+    }
+    
+    if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+});
+</script>
+</body>
+</html>

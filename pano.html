@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PANORAMA VIEWER</title>
+<meta charset="utf-8">
+<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+<style> @-ms-viewport { width: device-width; } </style>
+<link rel="stylesheet" href="vendor/reset.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="multiple-scenes ">
+
+<div id="pano"></div>
+
+<div id="sceneList">
+  <ul class="scenes">
+  
+      <a href="javascript:void(0)" class="scene" data-id="2-room-2">
+        <li class="text">ICT ROOM (2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="3-2nd-hallway">
+        <li class="text">2nd Floor Hallway</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="4-steel-2">
+        <li class="text">STEEL STAIR (2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="5-steel-1">
+        <li class="text">STEEL STAIR (1)</li>
+      </a>
+    
+    <a href="javascript:void(0)" class="scene" data-id="1-main">
+        <li class="text">MAIN GATE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="0-gate-2">
+        <li class="text">FRONT OF GATE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="0-gate">
+        <li class="text">NEAR EIM</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="1-eim">
+        <li class="text">EIM</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="2-near-parking">
+        <li class="text">NEAR PARKING</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="3-parking">
+        <li class="text">PARKING</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="4-near-acad">
+        <li class="text">NEAR ACAD</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="5-acad-building">
+        <li class="text">ACAD BUILDING</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="6-near-registrar">
+        <li class="text">NEAR REGISTRAR</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="7-registrar">
+        <li class="text">REGISTRAR</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="8-guidance">
+        <li class="text">GUIDANCE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="9-stem">
+        <li class="text">STEM</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="10-science-lab">
+        <li class="text">SCIENCE LAB</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="11-near-sci-lab">
+        <li class="text">NEAR SCI LAB</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="12-grade-9">
+        <li class="text">GRADE 9 (NEAR G-7)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="13-grade-8">
+        <li class="text">GRADE 8 (NEAR INTRAMUROS)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="14-near-intra">
+        <li class="text">NEAR INTRAMUROS</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="15-intramuros">
+        <li class="text">INTRAMUROS</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="16-grade-10">
+        <li class="text">GRADE 10 (NEAR INTRAMUROS)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="17-grade-10">
+        <li class="text">GRADE 10</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="18-ict">
+        <li class="text">FRONT OF ICT</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="19-near-court">
+        <li class="text">NEAR COURT</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="20-front-of-old-stage">
+        <li class="text">Front of old stage</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="21-canteen-entrance-">
+        <li class="text">CANTEEN ENTRANCE </li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="22-canteen-inside">
+        <li class="text">CANTEEN INSIDE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="24-grade-8-first-floor">
+        <li class="text">Grade 8 first floor</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="25-garden-entrance-">
+        <li class="text">Garden entrance </li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="26-grade-8-first-floor-near-steel-stairs">
+        <li class="text">Grade 8 first floor near steel stairs</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="27-grade-8-second-floor-steel-stairs">
+        <li class="text">Grade 8 second floor steel stairs</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="28-grade-8-second-floor-1">
+        <li class="text">Grade 8 second floor (1)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="29-grade-8-second-floor">
+        <li class="text">Grade 8 second floor</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="30-grade-8-second-floor-2">
+        <li class="text">Grade 8 second floor (2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="31-grade-8-second-floor-stone-stairs">
+        <li class="text">Grade 8 second floor stone stairs</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="32-grade-8-third-floor-stone-stairs">
+        <li class="text">Grade 8 third floor stone stairs</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="33-grade-8-third-floor">
+        <li class="text">Grade 8 third floor</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="34-grade-8-third-floor-2">
+        <li class="text">Grade 8 third floor (2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="35-grade-8-third-floor-1">
+        <li class="text">Grade 8 third floor (1)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="36-grade-8-third-floor-steel-stairs">
+        <li class="text">Grade 8 Third floor steel stairs</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="37-grade-9-hallway">
+        <li class="text">Grade 9 hallway</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="38-grade-9-hallway-1">
+        <li class="text">Grade 9 hallway (1)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="39-grade-9-hallway-2">
+        <li class="text">Grade 9 hallway (2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="40-grade-9-hallway-">
+        <li class="text">Grade 9 hallway </li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="41-near-stage">
+        <li class="text">Near stage</li>
+      </a>
+      
+      
+      <a href="javascript:void(0)" class="scene" data-id="0-scie-ins">
+        <li class="text">SCIENCE LABORATORY (INSIDE)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="1-sci-out">
+        <li class="text">SCIENCE LABORATORY (OUTSIDE)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="2-off-1">
+        <li class="text">OFFICE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="3-off-2">
+        <li class="text">OFFICE (1)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="4-off3">
+        <li class="text">OFFICE (2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="5-off-4">
+        <li class="text">OFFICE (3)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="6-off">
+        <li class="text">OFFICE (4)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="7-guid-1">
+        <li class="text">FRONT OF GUIDANCE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="8-g9">
+        <li class="text">GRADE 9 (2ND FLOOR)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="9-g9-1">
+        <li class="text">GRADE 9 (2ND FLOOR 1)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="10-g9-2">
+        <li class="text">GRADE 9 (2ND FLOOR 2)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="11-g9f">
+        <li class="text">GRADE 9 (2ND FLOOR 3)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="12-g9-9">
+        <li class="text">GRADE 9 (2ND FLOOR 4)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="13-g9hall">
+        <li class="text">GRADE 9 (2ND FLOOR HALLWAY)l</li>
+      </a>
+      
+        <a href="javascript:void(0)" class="scene" data-id="0-g7b--court">
+        <li class="text">Grade 7 Back of Court</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="1-g7can">
+        <li class="text">Grade 7 Near Canteen</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="2-ict-ground">
+        <li class="text">ICT Ground Floor</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="3-ict-1st">
+        <li class="text">ICT 1ST FLOOR (STAIR)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="4-ict-4th">
+        <li class="text">ICT 4TH FLOOR (STAIR)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="5-steel-4th-ict">
+        <li class="text">ICT 4TH FLOOR (STEEL STAIR)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="6-steel-4th-1">
+        <li class="text">ICT (STEEL STAIR TO 4TH FLOOR )</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="7-steel-3rd-">
+        <li class="text">ICT (STEEL STAIR TO 4TH FLOOR 1) </li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="8-steel-2nd">
+        <li class="text">ICT (STEEL STAIR TO 3RD FLOOR )</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="9-hall-3rd">
+        <li class="text">3rd Floor Hallway to Room 3</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="10-hall-1">
+        <li class="text">3rd Floor Hallway to Room 4</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="11-hall-2">
+        <li class="text">3rd Floor Hallway</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="12-str-2nd">
+        <li class="text">2ND Floor Stairs</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="13-hall-2nd">
+        <li class="text">2nd Floor Hallway 1</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="14-g9-10">
+        <li class="text">WAY TO GUIDANCE FROM GRADE (9-10)</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="15-g9">
+        <li class="text">Grade 9 To Intramuros</li>
+      </a>
+    
+  </ul>
+</div>
+
+<div id="titleBar">
+  <h1 class="sceneName"></h1>
+</div>
+
+<a href="javascript:void(0)" id="autorotateToggle">
+  <img class="icon off" src="img/play.png">
+  <img class="icon on" src="img/pause.png">
+</a>
+
+<a href="javascript:void(0)" id="fullscreenToggle">
+  <img class="icon off" src="img/fullscreen.png">
+  <img class="icon on" src="img/windowed.png">
+</a>
+
+<a href="javascript:void(0)" id="sceneListToggle">
+  <img class="icon off" src="img/expand.png">
+  <img class="icon on" src="img/collapse.png">
+</a>
+
+<a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
+  <img class="icon" src="img/up.png">
+</a>
+<a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
+  <img class="icon" src="img/down.png">
+</a>
+<a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
+  <img class="icon" src="img/left.png">
+</a>
+<a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
+  <img class="icon" src="img/right.png">
+</a>
+<a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
+  <img class="icon" src="img/plus.png">
+</a>
+<a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
+  <img class="icon" src="img/minus.png">
+</a>
+
+<script src="vendor/screenfull.min.js" ></script>
+<script src="vendor/bowser.min.js" ></script>
+<script src="vendor/marzipano.js" ></script>
+
+<script src="data.js"></script>
+<script src="index.js"></script>
+
+<script>
+  // Wait for Marzipano and index.js to finish loading
+  window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const target = urlParams.get('target');
+
+    if (target) {
+      // Find the link in your scene list that matches the target
+      // Example: if target is 'ICT', it looks for the <a> with data-id="18-ict"
+      const allScenes = document.querySelectorAll('#sceneList .scene');
+      
+      allScenes.forEach(scene => {
+        const sceneId = scene.getAttribute('data-id');
+        
+        // We check if the data-id contains our target name (case insensitive)
+        if (sceneId.toLowerCase().includes(target.toLowerCase())) {
+          console.log("Navigating to scene: " + sceneId);
+          scene.click(); // This simulates a click on the menu to switch the view
+        }
+      });
+    }
+  });
+</script>
+  
+<button onclick="window.location.href='index.html?session=active'" 
+    style="position:fixed; top:670px; left:10px; z-index:9999; background:#f59e0b; padding:10px; border-radius:5px; font-weight:bold;">
+    ← BACK TO MAP
+</button>
+
+</body>
+</html>
