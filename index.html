@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LimNavi">
     `
-    <link href="libs/remixicon/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
     
     <style>
     :root {
@@ -370,7 +370,7 @@ const buildings = [
     {id:"canteen", label:"🍽️ Canteen", x:0.048, y:0.178, w:0.087, h:0.267, maxFloor:1, panoTarget:"21-canteen-entrance-"},
     {id:"olds", label:"🏛️ Old Stage", x:0.048, y:0.462, w:0.087, h:0.116, maxFloor:1, panoTarget:"20-front-of-old-stage"},
     {id:"ict", label:"💻 ICT/SMAW", x:0.048, y:0.578, w:0.087, h:0.212, maxFloor:4, panoTarget:"18-ict"},
-    {id:"gateB", label:"Gate", x:0.00, y:0.83, w:0.055, h:0.10, maxFloor:0},
+    {id:"gate", label:"Gate", x:0.00, y:0.02, w:0.055, h:0.10, maxFloor:0, panoTarget:"1-main"},
 
     {id:"court", label:"🏀 Court", x:0.192, y:0.178, w:0.17, h:0.487, maxFloor:0},
     {id:"g7_small", label:"🎓 Grade 7", x:0.377, y:0.178, w:0.075, h:0.487, maxFloor:2},
@@ -586,17 +586,6 @@ function generateMap() {
         map.appendChild(btn);
     });
 }
-
-bridges.forEach(br => {
-        const el = document.createElement('div');
-        el.className = 'bridge';
-        el.style.left = (br.x * 100) + "%";
-        el.style.top = (br.y * 100) + "%";
-        el.style.width = (br.w * 100) + "%";
-        el.style.height = (br.h * 100) + "%";
-        map.appendChild(el);
-    });
-
 
 function initHammer() {
     const mapArea = document.getElementById('mapArea');
