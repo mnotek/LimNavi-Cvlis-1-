@@ -1,4 +1,4 @@
-const CACHE_NAME = 'limnavi-v2'; // bump this number whenever you change ASSETS
+const CACHE_NAME = 'limnavi-v3'; // bump this number whenever you change ASSETS
 
 const ASSETS = [
   './',
@@ -15,12 +15,15 @@ const EXTERNAL_ASSETS = [
   'https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css'
 ];
 
+const TILE_BATCH_SIZE = 50; // how many tile files to fetch at once
+
 // Install Event - save local files to cache (must all succeed)
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await cache.addAll(ASSETS);
+
       // cache external assets individually so one CDN hiccup
       // doesn't fail the entire install
       await Promise.all(
@@ -30,6 +33,27 @@ self.addEventListener('install', (e) => {
             .catch((err) => console.warn('Skipped caching', url, err))
         )
       );
+
+      // Precache all 360° pano tiles for full offline support.
+      // Reads tiles-manifest.json (a flat list of file paths) so we
+      // never have to hand-type thousands of tile filenames here.
+      try {
+        const manifestRes = await fetch('./tiles-manifest.json');
+        const tileFiles = await manifestRes.json();
+
+        for (let i = 0; i < tileFiles.length; i += TILE_BATCH_SIZE) {
+          const batch = tileFiles.slice(i, i + TILE_BATCH_SIZE);
+          await Promise.all(
+            batch.map((path) =>
+              fetch('./' + path)
+                .then((res) => { if (res.ok) return cache.put('./' + path, res); })
+                .catch(() => {}) // one bad/missing tile shouldn't break the whole install
+            )
+          );
+        }
+      } catch (err) {
+        console.warn('Could not precache tiles (tiles-manifest.json missing or unreadable)', err);
+      }
     })
   );
 });
