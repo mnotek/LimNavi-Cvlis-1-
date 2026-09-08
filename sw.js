@@ -1,4 +1,4 @@
-const CACHE_NAME = 'limnavi-v3'; // bump this number whenever you change ASSETS
+const CACHE_NAME = 'limnavi-v4'; // bump this number whenever you change ASSETS
 
 const ASSETS = [
   './',
